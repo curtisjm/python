@@ -23,5 +23,6 @@ print(red)
 	# you can add an * to the variable name and the values will be assigned to the variable as a list
 fruits = ("apple", "banana", "cherry", "strawberry", "raspberry")
 (green, yellow, *red) = fruits
-
-
+# if the * is added to another variable name than the last, 
+	# python will assign values to the variable until the number of values left matches the number of variables left
+(green, *tropic, red) = fruits
