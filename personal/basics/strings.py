@@ -9,7 +9,7 @@ if "free" in txt:
 # check if it's not in the string 
 txt = "The best things in life are free!"
 if "expensive" not in txt:
-  print("Yes, 'expensive' is NOT present.")
+	print("Yes, 'expensive' is NOT present.")
 
 # slicing strings
 b = "Hello, World!"
