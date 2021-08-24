@@ -5,7 +5,7 @@ class Node:
 		self.left = None
 		self.right = None
 
-# I ordered the rooms in a way so they would appear in the proper order for appearing sequentially in a preorder traverse
+# I organized the rooms in a way so they would appear in the proper order for appearing sequentially in a preorder traverse
 rooms = [
 	"\nA1: You are in a dark cave with only your wits to guide you...",
 	"\nB1: You are standing in a shallow stream with glowing eels circling your heels. \nA breeze is coming from the left, but it smells horrible...",
@@ -25,11 +25,10 @@ rooms = [
 ]
 
 index = 0
-# use preorder traversal to fill tree with room names
+# use preorder traversal to fill tree with room messages
 def create_tree(depth):
 	global index
-	if depth == 0:
-		return
+	if depth == 0: return
 	node = Node(rooms[index])
 	index += 1
 	node.left = create_tree(depth - 1)
@@ -42,8 +41,7 @@ print("--- Dungeon Escape ---")
 
 # keep taking user input until there are no nodes remaining
 while room.left != None and room.right != None:
-	if "C3" in room.message:
-		break
+	if "C3" in room.message: break
 	print(room.message)
 	response = input("\nWhich way would you like to go (left or right)? ").lower()
 	# validate user input
