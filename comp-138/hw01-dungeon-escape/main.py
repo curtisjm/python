@@ -46,12 +46,9 @@ while room.left != None and room.right != None:
 	response = input("\nWhich way would you like to go (left or right)? ").lower()
 	# validate user input
 	while response != "left" and response != "right":
-		response = input("Invalid input, only enter 'left' or 'right'. Try again... ")
+		response = input("\nInvalid input, only enter 'left' or 'right'. Try again... ")
 	print("\nYou went " + response + "...")
 	# traverse down the tree in the chosen direction
-	if response == "left":
-		room = room.left
-	else:
-		room = room.right
+	room = room.left if response == "left" else room.right
 
 print(room.message)
