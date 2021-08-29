@@ -5,6 +5,6 @@ try:
     high = int(high)
 
     for i in range(low, high, 4):
-        print(f"{i} ", end="")
+        print(f"{i}, ", end="")
 except:
     print("Invalid number.")
