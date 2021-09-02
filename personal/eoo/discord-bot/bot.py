@@ -20,5 +20,4 @@ async def on_message(message):
 
 # print(os.environ)
 print(os.environ.get("TOKEN"))
-# client.run("ODgyODMxODg4NTUxNjczODY2.YTBHRA.MxOpictoHFmrpQbd1Iav18GqnQ0")
 # client.run(os.getenv("TOKEN"))
