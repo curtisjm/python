@@ -1,18 +1,14 @@
 import pandas as pd
-import quandl, math
+import quandl, math, datetime
 import numpy as np
-
-# preprocessing for scaling
-# svm = support vector machine
-# model_selection for creating training and testing samples
+import matplotlib.pyplot as plt
 from sklearn import preprocessing, svm, model_selection
-
-# linear regression docs:
-# 	- https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
 from sklearn.linear_model import LinearRegression
+from matplotlib import style
 
 print("\n")
 
+style.use("ggplot")
 # find tickers to use in get function from Quandl's website
 # returns data set from stocks
 # 	- https://www.quandl.com/
@@ -37,18 +33,18 @@ df.fillna(-99999, inplace=True)
 
 # predict out 1% of the data frame, var will be number of days
 forecast_out = int(math.ceil(0.01 * len(df)))
-print("FC out: " + str(forecast_out))
 
 # shift index by desired number of periods (up in our case)
 df["label"] = df[forecast_col].shift(-forecast_out)
-
-df.dropna(inplace=True)
 
 # X = features : input (one column of the data in input set)
 X = np.array(df.drop(columns="label", axis=1))
 
 # scale x - standardize a dataset along any axis
 X = preprocessing.scale(X)
+
+X_lately = X[-forecast_out:]
+X = X[:-forecast_out:]
 
 df.dropna(inplace=True)
 
@@ -68,6 +64,33 @@ clf.fit(X_train, y_train)
 # test classifier
 accuracy = clf.score(X_test, y_test)
 
-print(accuracy)
+forecast_set = clf.predict(X_lately)
+
+print("Accuracy: " + str(accuracy))
+print("FC out: " + str(forecast_out))
+print("FC set: " + str(forecast_set))
+
+# col full of NaN data
+df["Forecast"] = np.nan
+
+# predictions
+last_date = df.iloc[-1].name
+last_unix = last_date.timestamp()
+# seconds in a day
+one_day = 86400
+next_unix = last_unix + one_day
+
+for i in forecast_set:
+    next_date = datetime.datetime.fromtimestamp(next_unix)
+    next_unix += one_day
+	# take all first columns, sets them to NaNs, final column is i (forecast)
+    df.loc[next_date] = [np.nan for _ in range(len(df.columns) - 1)] + [i]
+
+df["Adj. Close"].plot()
+df["Forecast"].plot()
+plt.legend(loc=4)
+plt.xlabel("Date")
+plt.ylabel("Price")
+plt.show()
 
 print()
