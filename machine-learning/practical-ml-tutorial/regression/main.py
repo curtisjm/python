@@ -2,6 +2,7 @@ import pandas as pd
 import quandl, math, datetime
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 from sklearn import preprocessing, svm, model_selection
 from sklearn.linear_model import LinearRegression
 from matplotlib import style
@@ -61,6 +62,15 @@ X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_s
 clf = LinearRegression(n_jobs=-1)
 # fit / train classifier, fit features and labels
 clf.fit(X_train, y_train)
+
+# use pickle to save classifier in a file
+with open("./linearRegression.pickle", "wb") as f:
+    pickle.dump(clf, f)
+
+# use saved classifier
+pickle_in = open("./linearRegression.pickle", "rb")
+clf = pickle.load(pickle_in)
+
 # test classifier
 accuracy = clf.score(X_test, y_test)
 
@@ -83,7 +93,7 @@ next_unix = last_unix + one_day
 for i in forecast_set:
     next_date = datetime.datetime.fromtimestamp(next_unix)
     next_unix += one_day
-	# take all first columns, sets them to NaNs, final column is i (forecast)
+    # take all first columns, sets them to NaNs, final column is i (forecast)
     df.loc[next_date] = [np.nan for _ in range(len(df.columns) - 1)] + [i]
 
 df["Adj. Close"].plot()
