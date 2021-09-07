@@ -24,6 +24,7 @@ df["HL_PCT"] = (df["Adj. High"] - df["Adj. Close"]) / df["Adj. Close"] * 100
 df["PCT_change"] = (df["Adj. Close"] - df["Adj. Open"]) / df["Adj. Open"] * 100
 
 # take only important values
+# adjusted close is the only thing that really hinges on price
 df = df[["Adj. Close", "HL_PCT", "PCT_change", "Adj. Volume"]]
 
 # guess future values
@@ -32,8 +33,8 @@ forecast_col = "Adj. Close"
 # treated as outliers in dataset
 df.fillna(-99999, inplace=True)
 
-# predict out 1% of the data frame, var will be number of days
-forecast_out = int(math.ceil(0.01 * len(df)))
+# predict out 10% of the data frame, var will be number of days
+forecast_out = int(math.ceil(0.1 * len(df)))
 
 # shift index by desired number of periods (up in our case)
 df["label"] = df[forecast_col].shift(-forecast_out)
@@ -45,7 +46,7 @@ X = np.array(df.drop(columns="label", axis=1))
 X = preprocessing.scale(X)
 
 X_lately = X[-forecast_out:]
-X = X[:-forecast_out:]
+X = X[:-forecast_out]
 
 df.dropna(inplace=True)
 
