@@ -63,7 +63,8 @@ for dance in dance_dirs:
             print(
                 f"Error, new name {new_song_name} already exists. Adding a 2 to it..."
             )
-            os.rename(root_dir + dance + song, +root_dir + dance + new_song_name)
+            new_song_name = new_song_name.replace(".", " 2.")
+            os.rename(root_dir + dance + song, root_dir + dance + new_song_name)
         except Exception as e:
             print("An unknown error has occurrend")
             print(e)
