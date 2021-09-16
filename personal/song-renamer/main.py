@@ -1,7 +1,17 @@
 import os
-import re
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+from dotenv import load_dotenv
 
-root_dir = "./songs/"
+load_dotenv()
+
+sp = spotipy.Spotify(
+    auth_manager=SpotifyClientCredentials(
+        client_id=os.getenv("CLIENT_ID"), client_secret=os.getenv("CLIENT_SECRET")
+    )
+)
+
+root_dir = "./"
 
 dance_dirs = [
     "Waltz/",
@@ -28,6 +38,9 @@ remove_strings = [
     "Lyric",
 ]
 
+# old_name: new_name
+old_and_new_names = {}
+
 for dance in dance_dirs:
     if dance.replace("/", "") not in os.listdir(root_dir):
         print(f"{dance} folder does not exist. Moving onto the next one...")
@@ -36,38 +49,12 @@ for dance in dance_dirs:
     songs = os.listdir(root_dir + dance)
 
     for song in songs:
-        string_changed = False
-        new_song_name = song
+        results = sp.search(q=song, limit=1)
+        track = enumerate(results["tracks"]["items"])
+        old_and_new_names[song] = {
+            "track": str(track["name"]),
+            "artist": str(track["artists"][0]["name"]),
+        }
 
-        try:
-            if "{" in song:
-                new_song_name = re.sub(r"\{[^()]*\}", "", song)
-            if "(" in song:
-                new_song_name = re.sub(r"\([^()]*\)", "", song)
-            if "[" in song:
-                new_song_name = re.sub(r"\[[^()]*\]", "", song)
-
-            for str in remove_strings:
-                if str in new_song_name:
-                    new_song_name = new_song_name.replace(str, "", -1)
-                    string_changed = True
-
-            if "  " in new_song_name:
-                new_song_name = new_song_name.replace("  ", " ", -1)
-
-            if " ." in new_song_name:
-                new_song_name = new_song_name.replace(" .", ".", -1)
-
-            os.rename(root_dir + dance + song, root_dir + dance + new_song_name)
-        except FileExistsError:
-            print(
-                f"Error, new name {new_song_name} already exists. Adding a 2 to it..."
-            )
-            new_song_name = new_song_name.replace(".", " 2.")
-            os.rename(root_dir + dance + song, root_dir + dance + new_song_name)
-        except Exception as e:
-            print("An unknown error has occurrend")
-            print(e)
-
-        if string_changed:
-            print(f"{song} was changed to {new_song_name}")
+    [print(name) for name in old_and_new_names]
+    old_and_new_names = {}
